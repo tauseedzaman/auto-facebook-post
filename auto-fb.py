@@ -107,4 +107,4 @@ if __name__== "__main__":
     caption = str(get_Geo_News().strip()) + '\n\n' + hashtags(hash_idea)
     driver = webdriver.Chrome("path")
     login(username,password)
-    upload(caption)
+    post(caption)
