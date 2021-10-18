@@ -13,12 +13,27 @@ from time import sleep
 import pyautogui
 import requests
 
-#getting news from geo news website
+#getting news from different pakistani's websites
+
+#get news from thenews.com.pk
+def get_TheNews_News():
+    html_text=requests.get("https://www.thenews.com.pk/latest-stories").text
+    soup = BeautifulSoup(html_text, 'lxml')
+    main_container = soup.find_all("div",{'class':["writter-list-item-story"]})
+    i=1 
+    output = "Top Stories on TheNews Website\n"
+    for item in main_container:
+        heading = item.find("h2").text.strip()
+        link = item.find("a").get("href")
+        output = output + (f"No: {i} \n title: {heading} \n link: {link} \n\n")
+        i=i+1
+    return output
+
+# get news from geo news
 def get_Geo_News():
     html_text=requests.get("https://www.geo.tv/").text
     soupp = soup(html_text, 'lxml')
     main_container = soupp.find_all("article")
-
     i=1
     output = "Top Stories on GEO News\n"
     for item in main_container:
@@ -27,8 +42,7 @@ def get_Geo_News():
         i=i+1
     return output
 
-#fetching hashtags
-
+#fetching hashtags for facebook post
 def hashtags(hash_idea):
     url = 'http://best-hashtags.com/hashtag/' + hash_idea
 
@@ -49,6 +63,7 @@ def hashtags(hash_idea):
         print('Something went wrong While Fetching hashtags')
 
 
+# login to facebook account
 def login(username, password):
 
     try:
@@ -64,7 +79,8 @@ def login(username, password):
     except:
         print('Something went wrong while login process')
 
-def upload(img_path,caption):
+
+def post(caption):
     try:
         add = WebDriverWait(driver,20).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div/div[1]/div/div[2]/div[4]/div[1]/div[3]/div[2]/span/div/i')))
         add.click()
@@ -81,7 +97,7 @@ def upload(img_path,caption):
         btn_post = WebDriverWait(driver,20).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[4]/div[1]/div/div[2]/div/div/div/form/div/div[1]/div/div/div/div[3]/div[2]/div/div/div[1]/div/span/span')))
         btn_post.click()
     except:
-        print('Something Went Wrong While posting the image or video')
+        print('Something Went Wrong While posting ')
 if __name__== "__main__":
     #turn for credentials, driver, and caption
     username = "" #input('ENTER USERNAME : ')
@@ -91,4 +107,4 @@ if __name__== "__main__":
     caption = str(get_Geo_News().strip()) + '\n\n' + hashtags(hash_idea)
     driver = webdriver.Chrome("path")
     login(username,password)
-    upload(img_path,caption)
+    upload(caption)
