@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # Automate Facebook Posting 
+# Auther: Tauseed Zaman
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,7 +11,6 @@ import bs4
 from bs4 import BeautifulSoup as soup 
 from urllib.request import Request, urlopen
 from time import sleep
-import pyautogui
 import requests
 
 #getting news from different pakistani's websites
@@ -20,11 +20,11 @@ def get_DailyPakistan_News():
     html_text=requests.get("https://en.dailypakistan.com.pk/latest").text
     soupp = soup(html_text, 'lxml')
     main_container = soupp.find_all("div",{'class':["col-xs-12 col-sm-4 col-lg-3 verticle-widget-col news3"]})
-    output = "Top Stories on DailyPakistan\n"
+    output=[]
     for i,item in enumerate(main_container):
-        heading = item.find("small").text
-        link = item.find("a").get("href")
-        output = output + (f"No: {i} \n title: {heading} \n link: {link} \n\n")
+       heading = item.find("small").text
+       link = item.find("a").get("href")
+       output.append({heading,link})
     return output
 
 #get news from thenews.com.pk
@@ -90,9 +90,9 @@ def login(username, password):
 
 
 
-def post(caption="Hello World"):
-    try:
-
+def post(caption):
+    for post_link,post_title in caption:
+        try:
             # click on + button
             add = WebDriverWait(driver,20).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div/div[1]/div/div[2]/div[4]/div[1]/div[3]/div[2]/span/div/i')))
             add.click()
@@ -103,25 +103,23 @@ def post(caption="Hello World"):
             sleep(5)
             print(caption)
             # select text box
-            # /html/body/div[11]/div[1]/div/div[2]/div/div/div/form/div/div[1]/div/div/div/div[2]/div[1]/div[1]/div[1]/div/div/div/div/div/div/div[2]/div/div/div/div
             cap = WebDriverWait(driver,20).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[11]/div[1]/div/div[2]/div/div/div/form/div/div[1]/div/div/div/div[2]/div[1]/div[1]/div[1]/div/div/div/div/div/div/div[2]/div/div/div/div')))
-            cap.send_keys(caption)
-            
+            cap.send_keys(post_title)
+            cap.send_keys(post_link)
+                
             sleep(5) # this is mandatory while doing some thing with bot
-            # /html/body/div[11]/div[1]/div/div[2]/div/div/div/form/div/div[1]/div/div/div/div[3]/div[2]/div/div/div[1]/div/span/span
             btn_post = WebDriverWait(driver,20).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[11]/div[1]/div/div[2]/div/div/div/form/div/div[1]/div/div/div/div[3]/div[2]/div/div/div[1]/div/span/span')))
             btn_post.click()
-    except:
+            sleep(5)
+        except:
             print('Something Went Wrong While posting ')
 
+    
 if __name__== "__main__":
     #turn for credentials, driver, and caption
     username = "" #input('ENTER USERNAME : ')
     password = "" #input('ENTER PASSWORD : ')
-    img_path = "" #input('Enter Image Path : ')
-    hash_idea = "PakistanNews" #input('ENTER ONE HASH : ')
-    caption = ""  
- #str(get_Geo_News().strip()) + '\n\n' + hashtags(hash_idea)
-    driver = webdriver.Chrome("")
+    hash_idea = "" #input('ENTER ONE HASH : ')
+    driver = webdriver.Chrome("path to chrome driver")
     login(username,password)
     post(get_DailyPakistan_News())
