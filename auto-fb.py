@@ -30,14 +30,13 @@ def get_DailyPakistan_News():
 #get news from thenews.com.pk
 def get_TheNews_News():
     html_text=requests.get("https://www.thenews.com.pk/latest-stories").text
-    soup = BeautifulSoup(html_text, 'lxml')
-    main_container = soup.find_all("div",{'class':["writter-list-item-story"]})
-    i=1 
-    output = "Top Stories on TheNews Website\n"
-    for item in main_container:
+    soupp = soup(html_text, 'lxml')
+    main_container = soupp.find_all("div",{'class':["writter-list-item-story"]})
+    output = []
+    for i,item in enumerate(main_container):
         heading = item.find("h2").text.strip()
         link = item.find("a").get("href")
-        output = output + (f"No: {i} \n title: {heading} \n link: {link} \n\n")
+        output.append(heading,link)
         i=i+1
     return output
 
@@ -46,10 +45,10 @@ def get_Geo_News():
     html_text=requests.get("https://www.geo.tv/").text
     soupp = soup(html_text, 'lxml')
     main_container = soupp.find_all("article")
-    output = "Top Stories on GEO News\n"
+    output = []
     for i,item in enumerate(main_container):
         a_tage = item.find("a")
-        output = output + (f"No:[{i}] title: {a_tage.text.strip()} \n link: {a_tage.get('href')} \n\n")
+        output.append(a_tage.text.strip(),a_tage.get('href'))
     return output
 
 #fetching hashtags for facebook post
